@@ -301,6 +301,9 @@ def create_waymo_info_file(data_path,
     print(f'Waymo info test file is saved to {filename}')
     mmcv.dump(waymo_infos_test, filename)
 
+def create_a9_info_file():
+    # TODO: Create info file (.pkl)
+    pass
 
 def _create_reduced_point_cloud(data_path,
                                 info_path,

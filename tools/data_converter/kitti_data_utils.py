@@ -293,6 +293,9 @@ def get_kitti_image_info(path,
 
     return list(image_infos)
 
+class A9InfoGatherer:
+    # TODO: Implement InfoGatherer
+    pass
 
 class WaymoInfoGatherer:
     """

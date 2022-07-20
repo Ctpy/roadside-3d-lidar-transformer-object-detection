@@ -194,6 +194,41 @@ def waymo_data_prep(root_path,
         num_worker=workers).create()
 
 
+def a9_data_prep(root_path,
+                 info_prefix,
+                 version,
+                 out_dir,
+                 workers):
+    if version == 'point_cloud':
+        from tools.data_converter import a9_converter as a9
+        splits = ['training', 'validation', 'testing']
+        for i, split in enumerate(splits):
+            load_dir = osp.join(root_path, 'open_label', split)
+            if split == 'validation':
+                save_dir = osp.join(out_dir, 'kitti_format', 'training')
+            else:
+                save_dir = osp.join(out_dir, 'kitti_format', split)
+            # TODO: Implemt image and lidar converter
+            converter = a9.A92KITTI(
+                load_dir,
+                save_dir,
+                version,
+                info_prefix,
+                workers=workers,
+                test_mode=(split == 'testing'))
+
+        # TODO: Implement info file
+        # create_groundtruth_database(dataset_name, root_path, info_prefix,
+        #                            f'{out_dir}/{info_prefix}_infos_train.pkl')
+    elif version == 'image':
+        pass
+
+    elif version == 'multi_modal':
+        pass
+    else:
+        print("--help for the version choices A9: ['point_cloud', 'image', 'multi_modal']")
+
+
 parser = argparse.ArgumentParser(description='Data converter arg parser')
 parser.add_argument('dataset', metavar='kitti', help='name of the dataset')
 parser.add_argument(
@@ -206,7 +241,8 @@ parser.add_argument(
     type=str,
     default='v1.0',
     required=False,
-    help='specify the dataset version, no need for kitti')
+    choices=['v1.0', 'point_cloud', 'image', 'multi_modal'],
+    help="""specify the dataset version, no need for kitti, for the A9: ['point_cloud', 'image', 'multi_modal']""")
 parser.add_argument(
     '--max-sweeps',
     type=int,
@@ -299,5 +335,12 @@ if __name__ == '__main__':
         sunrgbd_data_prep(
             root_path=args.root_path,
             info_prefix=args.extra_tag,
+            out_dir=args.out_dir,
+            workers=args.workers)
+    elif args.dataset == 'a9':
+        a9_data_prep(
+            root_path=args.root_path,
+            info_prefix=args.extra_tag,
+            version=args.version,
             out_dir=args.out_dir,
             workers=args.workers)
